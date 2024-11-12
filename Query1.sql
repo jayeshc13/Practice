@@ -1,6 +1,6 @@
 create database database01;
 show databases;
-8
+
 drop database database01;
 use database1;
 create table stud(
@@ -133,6 +133,7 @@ where country = 'USA' OR country = 'UK' OR country ='Australia';
 select * from customers
 where country in ('USA','UK','Australia');
 
+
 -- we use between for range (only works on numeric or date)
 -- customers details whose creditlimit is from 50000 to 150000  
  select * from customers
@@ -185,6 +186,8 @@ from customers
 group by country
 order by highest desc;
 
+
+
 -- top 5 countries 
 select country ,max(creditlimit) as highest
 from customers
@@ -202,4 +205,89 @@ select avg(creditlimit) from customers);
 -- find out customers details whose order is cancelled
 select * from orders
 where status = 'cancelled';  
+
+-- 12/09/24
+-- who purchased classic cars
+select * from products
+where productLine = 'Classic Cars';
+
+select * from products
+where productLine = 'Motorcycles';
+
+select * from employees
+where lastName = 'Bow';
+
+select * from employees 
+where jobTitle = 'Sales Rep';
+
+
+
+-- customers who purchased classic cars
+select * from customers
+where customerNumber in (
+select customerNumber from orders
+where orderNumber in
+(select orderNumber from orderdetails
+where productCode in
+(select productCode from products
+where productLine = 'classic Cars'))); 
+
+-- customers who cancelled order
+select * from customers
+where customerNumber in (
+select customerNumber from orders
+where status = 'cancelled');
+
+-- INNER JOIN
+select c.customerNumber,c.contactFirstName,c.contactFirstName,c.creditLimit,
+o.status,o.orderDate
+from customers as c inner join orders as o
+on c.customerNumber = o.customerNumber;
+
+-- LEFT JOIN 
+select c.customerNumber,c.contactFirstName,c.contactFirstName,c.creditLimit,
+o.status,o.orderDate
+from customers as c left join orders as o
+on c.customerNumber = o.customerNumber;
+
+-- RIGHT JOIN
+select c.customerNumber,c.contactFirstName,c.contactFirstName,c.creditLimit,
+o.status,o.orderDate
+from customers as c right join orders as o
+on c.customerNumber = o.customerNumber; 
+--  FULL OUTER JOIN
+select c.customerNumber,c.contactFirstName,c.contactFirstName,c.creditLimit,
+o.status,o.orderDate
+from customers as c left join orders as o
+on c.customerNumber = o.customerNumber
+
+
+union 
+
+
+select c.customerNumber,c.contactFirstName,c.contactFirstName,c.creditLimit,
+o.status,o.orderDate
+from customers as c right join orders as o
+on c.customerNumber = o.customerNumber;
+
+-- with order cancelled 
+select c.customerNumber,c.contactFirstName,c.contactFirstName,c.creditLimit,
+o.status,o.orderDate
+from customers as c inner join orders as o
+on c.customerNumber = o.customerNumber
+where o.status='cancelled'
+order by c.creditlimit desc
+limit 3;
+
+SELECT 
+    employeeNumber,
+    firstname,
+    officeCode,
+    ROW_NUMBER() OVER 
+    (PARTITION BY officeCode ORDER BY employeeNumber desc) 
+    AS row_num
+FROM 
+    employees;
+    
+
 
